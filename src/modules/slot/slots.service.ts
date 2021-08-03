@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException } from '@nestjs/common';
 import { CreateSlotDto } from './dto/create-slot.dto';
 import { GetSlotsFilterDto } from './dto/get-slots-filter.dto';
 import { SlotRepository } from './slot.repository';
@@ -59,5 +59,13 @@ export class SlotsService {
     slot.status = status;
     await this.slotRepository.save(slot);
     return slot;
+  }
+
+  async toggleStatus(id: number, user: UserEntity): Promise<void> {
+    await this.slotRepository.reserveSlot(id, user);
+  }
+
+  async getAvailableSlotsByUserId(userId: number, user: UserEntity): Promise<SlotDto[]> {
+    return this.slotRepository.getAvailableSlots(userId, user);
   }
 }

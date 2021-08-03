@@ -1,4 +1,19 @@
-import { Controller, Get, Post, Body, Param, Delete, Patch, Query, UsePipes, ValidationPipe, ParseIntPipe, UseGuards, Logger } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Param,
+  Delete,
+  Patch,
+  Query,
+  UsePipes,
+  ValidationPipe,
+  ParseIntPipe,
+  UseGuards,
+  Logger,
+  Put,
+} from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { SlotsService } from './slots.service';
 import { CreateSlotDto } from './dto/create-slot.dto';
@@ -58,5 +73,21 @@ export class SlotsController {
     @AuthUser() user: UserEntity
   ): Promise<SlotDto> {
     return this.slotsService.updateSlotStatus(id, status, user);
+  }
+
+  @Put('/toggle')
+  toggleStatus(
+    @Body('id', ParseIntPipe) id: number,
+    @AuthUser() user: UserEntity
+  ): Promise<any> {
+    return this.slotsService.toggleStatus(id, user);
+  }
+
+  @Post('/empty')
+  getAvailableSlotsByUserId(
+    @Body('userId', ParseIntPipe) id: number,
+    @AuthUser() user: UserEntity
+  ): Promise<SlotDto[]> {
+    return this.slotsService.getAvailableSlotsByUserId(id, user);
   }
 }

@@ -25,4 +25,7 @@ export class SlotEntity extends AbstractEntity{
   @Column()
   userId: number;
 
+  @Column({ nullable: true})
+  refUserId: number;
+
 }
