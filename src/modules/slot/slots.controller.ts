@@ -38,7 +38,7 @@ export class SlotsController {
   createSlot(
     @Body() createSlotDto: CreateSlotDto,
     @AuthUser() user: UserEntity
-  ): Promise<void> {
+  ): Promise<SlotDto> {
     this.logger.verbose(`User "${user.username}" creating a new slot. Data: ${JSON.stringify(createSlotDto)}`);
     return this.slotsService.createSlot(createSlotDto, user);
   }

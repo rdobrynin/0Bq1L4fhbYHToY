@@ -31,7 +31,7 @@ export class SlotRepository extends Repository<SlotEntity> {
   }
 
   async createSlot(createSlotDto: CreateSlotDto, user: UserEntity): Promise<SlotDto> {
-    const { description, timeStart, timeEnd } = createSlotDto;
+    const { timeStart, timeEnd } = createSlotDto;
 
     const slot = new SlotEntity();
     slot.timeStart = timeStart;

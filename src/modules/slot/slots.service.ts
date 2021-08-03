@@ -1,4 +1,4 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { ConflictException, Injectable, InternalServerErrorException, NotFoundException } from '@nestjs/common';
 import { CreateSlotDto } from './dto/create-slot.dto';
 import { GetSlotsFilterDto } from './dto/get-slots-filter.dto';
 import { SlotRepository } from './slot.repository';
@@ -27,9 +27,18 @@ export class SlotsService {
     return plainToClass(SlotDto, found);
   }
 
-  async createSlot(createSlotDto: CreateSlotDto, user: UserEntity): Promise<void> {
+  async createSlot(createSlotDto: CreateSlotDto, user: UserEntity): Promise<SlotDto> {
+    const queryBuilder = this.slotRepository.createQueryBuilder('slot');
 
-    await this.slotRepository.createSlot(createSlotDto, user);
+    const slotsCount = await queryBuilder
+      .where(`slot.timeStart  >= '${createSlotDto.timeStart}'`)
+      .andWhere(`slot.timeEnd  <= '${createSlotDto.timeEnd}'`)
+      .getCount();
+    if (slotsCount > 0) {
+      throw new ConflictException(`This time period already recorded to slot `);
+    }
+
+    return this.slotRepository.createSlot(createSlotDto, user);
   }
 
   async deleteSlot(id: number, user: UserEntity): Promise<any> {
