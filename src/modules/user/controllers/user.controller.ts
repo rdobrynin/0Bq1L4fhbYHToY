@@ -72,7 +72,7 @@ export class UserController {
     return this.userService.updateUser(id, updateUserDto, user);
   }
 
-  @Post('/:find')
+  @Post('find')
   @UsePipes(ValidationPipe)
   async findUsers(
     @Body() findUserDto: FindUserDto,
