@@ -70,14 +70,18 @@ export class UserService {
   }
 
   async createUser(createUserDto: CreateUserDto, user: UserEntity): Promise<UserDto> {
+    // for easy Test Assignment every role can update user
+    // if (user.role !== UserRole.ADMIN) {
+    //   throw new BadRequestException(`Authenticated user should have ADMIN role`);
+    // }
     return this.userRepository.createUser(createUserDto, user);
   }
 
   async updateUser(id: number, updateUserDto: UpdateUserDto, user: UserEntity): Promise<UserDto> {
-
-    if (user.role !== UserRole.ADMIN) {
-      throw new BadRequestException(`Authenticated user should have ADMIN role`);
-    }
+    // for easy Test Assignment every role can update user
+    // if (user.role !== UserRole.ADMIN) {
+    //   throw new BadRequestException(`Authenticated user should have ADMIN role`);
+    // }
     
     const found = await this.userRepository.findOne({ where: { id } });
     if (!found) {

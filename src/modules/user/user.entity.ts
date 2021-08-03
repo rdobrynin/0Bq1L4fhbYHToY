@@ -1,7 +1,8 @@
-import { Entity, Column, Unique } from 'typeorm';
+import { Entity, Column, Unique, OneToMany } from 'typeorm';
 import * as bcrypt from 'bcryptjs';
 import { UserRole } from './user-role.enum';
 import { AbstractEntity } from '../../main/abstract.entity';
+import { SlotEntity } from '../slot/slot.entity';
 
 
 @Entity({ name: 'user' })
@@ -33,6 +34,14 @@ export class UserEntity extends AbstractEntity {
   })
   role: UserRole
 
+  @Column({nullable: true, type: 'timestamp'})
+  timeStart: Date;
+
+  @Column({nullable: true, type: 'timestamp'})
+  timeEnd: Date;
+
+  @OneToMany(type => SlotEntity, slot => slot.user, { eager: true, cascade: true})
+  slots: SlotEntity[];
   
   async validatePassword(password: string): Promise<boolean> {
     const hash = await bcrypt.hash(password, this.salt);

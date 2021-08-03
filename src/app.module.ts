@@ -2,6 +2,7 @@ import { Module, CacheModule, CacheInterceptor } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './modules/auth/auth.module';
 import { UserModule } from './modules/user/user.module';
+import { SlotModule } from './modules/slot/slot.module';
 import * as typeOrmConfig from './database/config/typeorm.config';
 import { APP_INTERCEPTOR } from '@nestjs/core';
 import * as redisStore from 'cache-manager-redis-store';
@@ -13,6 +14,7 @@ import * as config from 'config';
   imports: [
     AuthModule,
     UserModule,
+    SlotModule,
     TypeOrmModule.forRoot(typeOrmConfig),
     CacheModule.register({
       store: redisStore,

@@ -20,6 +20,8 @@ define(UserEntity, (faker: typeof Faker) => {
     user.salt =  bcrypt.genSaltSync();
     user.password =  bcrypt.hashSync(faker.random.word(), user.salt);
     user.phone = faker.phone.phoneNumberFormat();
+    user.timeStart = faker.date.between('2021-08-03 10:41:30.746877', '2021-08-03 14:41:30.746877');
+    user.timeEnd = faker.date.between('2021-08-03 15:41:30.746877', '2021-08-03 22:41:30.746877');
     user.role = faker.random.arrayElement([UserRole.ADMIN, UserRole.MANAGER, UserRole.GUEST, UserRole.GHOST]);
 
     return user;
