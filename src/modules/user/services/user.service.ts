@@ -15,6 +15,7 @@ import { UpdateUserDto } from '../dto/update-user.dto';
 import { plainToClass } from 'class-transformer';
 import { AuthService } from '../../auth/services/auth.service';
 import { UserRole } from '../user-role.enum';
+import { FindUserDto } from '../dto/find-user.dto';
 
 @Injectable()
 @Dependencies(AuthService)
@@ -87,6 +88,23 @@ export class UserService {
       this.userRepository.merge(found, updateUserDto);
       const result = await this.userRepository.save(found);
       return plainToClass(UserDto, result);
+    } catch (error) {
+      this.logger.error(error.message, error.stack);
+      throw new InternalServerErrorException();
+    }
+  }
+
+  async findUsers(findUserDto: FindUserDto, user: UserEntity): Promise<UserDto[]> {
+    const queryBuilder = this.userRepository.createQueryBuilder('user');
+
+    try {
+      const users = await queryBuilder
+        .where("LOWER(user.firstName) like :firstName", { firstName:`%${findUserDto.firstName.toLowerCase()}%` })
+        .andWhere("LOWER(user.lastName) like :lastName", { lastName:`%${findUserDto.lastName.toLowerCase()}%` })
+        .orderBy("user.id", "DESC")
+        .getMany();
+
+      return plainToClass(UserDto, users);
     } catch (error) {
       this.logger.error(error.message, error.stack);
       throw new InternalServerErrorException();

@@ -20,6 +20,7 @@ import { AuthUser } from '../../../main/decorators';
 import { UserEntity } from '../user.entity';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
+import { FindUserDto } from '../dto/find-user.dto';
 
 @Controller('users')
 @UseGuards(AuthGuard())
@@ -69,5 +70,14 @@ export class UserController {
     @AuthUser() user: UserEntity,
   ): Promise<UserDto> {
     return this.userService.updateUser(id, updateUserDto, user);
+  }
+
+  @Post('/:find')
+  @UsePipes(ValidationPipe)
+  async findUsers(
+    @Body() findUserDto: FindUserDto,
+    @AuthUser() user: UserEntity,
+  ): Promise<UserDto[]>{
+    return this.userService.findUsers(findUserDto, user);
   }
 }
