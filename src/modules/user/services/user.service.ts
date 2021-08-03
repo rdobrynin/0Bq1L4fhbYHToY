@@ -1,7 +1,9 @@
 import {
+  BadRequestException,
+  Dependencies,
   Injectable,
-  Logger,
   InternalServerErrorException,
+  Logger,
   NotFoundException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -10,9 +12,12 @@ import { UserEntity } from '../user.entity';
 import { UserDto } from '../dto/user.dto';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
-import { plainToClass, classToPlain } from 'class-transformer';
+import { plainToClass } from 'class-transformer';
+import { AuthService } from '../../auth/services/auth.service';
+import { UserRole } from '../user-role.enum';
 
 @Injectable()
+@Dependencies(AuthService)
 export class UserService {
   private logger = new Logger('UserService');
 
@@ -25,7 +30,6 @@ export class UserService {
 
     try {
       const users = await queryBuilder
-                          .leftJoinAndSelect("user.tasks", "tasks")
                           .skip(limit * (page-1))
                           .take(limit)
                           .getMany();
@@ -47,6 +51,11 @@ export class UserService {
   }
 
   async deleteUser(id: number, user: UserEntity): Promise<any> {
+
+    if (user.role !== UserRole.ADMIN) {
+      throw new BadRequestException(`Authenticated user should have ADMIN role`);
+    }
+
     const result = await this.userRepository.delete(id);
 
     if (result.affected === 0) {
@@ -55,16 +64,19 @@ export class UserService {
 
     return Promise.resolve({
       result: result,
-      status: 'succes'
+      status: 'success'
     });
   }
-
 
   async createUser(createUserDto: CreateUserDto, user: UserEntity): Promise<UserDto> {
     return this.userRepository.createUser(createUserDto, user);
   }
 
   async updateUser(id: number, updateUserDto: UpdateUserDto, user: UserEntity): Promise<UserDto> {
+
+    if (user.role !== UserRole.ADMIN) {
+      throw new BadRequestException(`Authenticated user should have ADMIN role`);
+    }
     
     const found = await this.userRepository.findOne({ where: { id } });
     if (!found) {
@@ -74,7 +86,6 @@ export class UserService {
     try {
       this.userRepository.merge(found, updateUserDto);
       const result = await this.userRepository.save(found);
-      // const result = await this.userRepository.update({id: id}, updateUserDto);
       return plainToClass(UserDto, result);
     } catch (error) {
       this.logger.error(error.message, error.stack);

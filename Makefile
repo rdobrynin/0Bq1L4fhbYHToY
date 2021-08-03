@@ -10,6 +10,9 @@ app_install:
 	@npm run docker:up
 	@npm run start:dev
 
+seed_data:
+	@npm run seed:run
+
 db_shell:
 	@docker exec -it fudy-roman-network_db_postgres_1 bash
 redis_shell:
